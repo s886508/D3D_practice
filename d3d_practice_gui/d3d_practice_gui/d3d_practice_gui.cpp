@@ -76,6 +76,16 @@ void d3d_practice_gui::InitD3D(HWND hwnd) {
 }
 
 void d3d_practice_gui::CleanD3D() {
+	if (m_vertex_buffer) {
+		m_vertex_buffer->Release();
+		m_vertex_buffer = nullptr;
+	}
+
+	if (m_input_layout) {
+		m_input_layout->Release();
+		m_input_layout = nullptr;
+	}
+
 	if (m_vertex_shader) {
 		m_vertex_shader->Release();
 		m_vertex_shader = nullptr;
