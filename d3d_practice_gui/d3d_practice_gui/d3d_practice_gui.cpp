@@ -3,6 +3,8 @@
 #include <d3d11.h>
 #include <d3dx11.h>
 #include <d3dx10.h>
+#include <d3dx10math.h>
+#include "d3d_def.h"
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dx11.lib")
@@ -14,13 +16,20 @@ d3d_practice_gui::d3d_practice_gui(QWidget *parent)
 	m_swapchain(nullptr),
 	m_device(nullptr),
 	m_device_context(nullptr),
-	m_render_target_view(nullptr)
+	m_render_target_view(nullptr),
+	m_vertex_shader(nullptr),
+	m_pixel_shader(nullptr),
+	m_vertex_buffer(nullptr),
+	m_input_layout(nullptr)
 {
 	ui.setupUi(this);
 
 	if (m_display_window) {
-		m_display_window->setGeometry(50, 50, 320, 240);
+		m_display_window->setGeometry(10, 10, 360, 360);
 		InitD3D((HWND)m_display_window->winId());
+		InitD3DPipeline();
+		InitD3DBuffer();
+		CreateTriangle();
 	}
 	
 }
@@ -59,22 +68,89 @@ void d3d_practice_gui::InitD3D(HWND hwnd) {
 		ZeroMemory(&view_port, sizeof(D3D11_VIEWPORT));
 		view_port.TopLeftX = 0;
 		view_port.TopLeftY = 0;
-		view_port.Width = 320;
-		view_port.Height = 240;
+		view_port.Width = 360;
+		view_port.Height = 360;
 
 		m_device_context->RSSetViewports(1, &view_port);
 	}
 }
 
 void d3d_practice_gui::CleanD3D() {
-	if (m_swapchain)
+	if (m_vertex_shader) {
+		m_vertex_shader->Release();
+		m_vertex_shader = nullptr;
+	}
+
+	if (m_pixel_shader) {
+		m_pixel_shader->Release();
+		m_pixel_shader = nullptr;
+	}
+
+	if (m_swapchain) {
 		m_swapchain->Release();
-	if (m_render_target_view)
+		m_swapchain = nullptr;
+	}
+		
+	if (m_render_target_view) {
 		m_render_target_view->Release();
-	if (m_device)
+		m_render_target_view = nullptr;
+	}
+		
+	if (m_device) {
 		m_device->Release();
-	if (m_device_context)
+		m_device = nullptr;
+	}
+		
+	if (m_device_context) {
 		m_device_context->Release();
+		m_device_context = nullptr;
+	}
+}
+
+void d3d_practice_gui::InitD3DPipeline() {
+	ID3D10Blob *vertex_blob = nullptr, *pixel_blob = nullptr;
+	D3DX11CompileFromFile(L"shaders.shader", 0, 0, "VShader", "vs_4_0", 0, 0, 0, &vertex_blob, 0, 0);
+	D3DX11CompileFromFile(L"shaders.shader", 0, 0, "PShader", "ps_4_0", 0, 0, 0, &pixel_blob, 0, 0);
+	
+	if (m_device) {
+		if (vertex_blob)
+			m_device->CreateVertexShader(vertex_blob->GetBufferPointer(), vertex_blob->GetBufferSize(), NULL, &m_vertex_shader);
+		if (pixel_blob)
+			m_device->CreatePixelShader(pixel_blob->GetBufferPointer(), pixel_blob->GetBufferSize(), NULL, &m_pixel_shader);
+	}
+
+	if (m_device_context) {
+		m_device_context->VSSetShader(m_vertex_shader, 0, 0);
+		m_device_context->PSSetShader(m_pixel_shader, 0, 0);
+	}
+
+	// Init input layout
+	D3D11_INPUT_ELEMENT_DESC ie_desc[] = {
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	};
+
+	if (m_device && m_vertex_shader) {
+		m_device->CreateInputLayout(ie_desc, 2, vertex_blob->GetBufferPointer(), vertex_blob->GetBufferSize(), &m_input_layout);
+	}
+
+	if (m_device_context) {
+		m_device_context->IASetInputLayout(m_input_layout);
+	}
+}
+
+void d3d_practice_gui::InitD3DBuffer() {
+	if (m_device) {
+		D3D11_BUFFER_DESC buf_desc;
+		ZeroMemory(&buf_desc, sizeof(D3D11_BUFFER_DESC));
+
+		buf_desc.Usage = D3D11_USAGE_DYNAMIC;
+		buf_desc.ByteWidth = sizeof(VERTEX) * 3;  // For drawgin triangle currently.
+		buf_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		buf_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+		m_device->CreateBuffer(&buf_desc, NULL, &m_vertex_buffer);
+	}
 }
 
 void d3d_practice_gui::paintEvent(QPaintEvent *e) {
@@ -86,10 +162,39 @@ bool d3d_practice_gui::RenderFrame() {
 	if (m_device_context)
 		m_device_context->ClearRenderTargetView(m_render_target_view, D3DXCOLOR(1.f, 0.2f, 0.4f, 1.f));
 
-	// ToDo: Rendering frame onto back buffer.
+	// Rendering frame onto back buffer.
+	RenderTriangle();
 
 	if (m_swapchain)
 		m_swapchain->Present(0, 0);
 
 	return true;
+}
+
+void d3d_practice_gui::RenderTriangle() {
+	if (m_device_context) {
+		UINT stride = sizeof(VERTEX);
+		UINT offset = 0;
+
+		m_device_context->IASetVertexBuffers(0, 1, &m_vertex_buffer, &stride, &offset);
+		m_device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		// Draw to back buffer
+		m_device_context->Draw(3, 0);
+	}
+}
+
+void d3d_practice_gui::CreateTriangle() {
+	VERTEX v[] = {
+		{0.f, 0.5f, 0.f, D3DXCOLOR(1.f, 0.f, 0.f, 1.f)},
+		{0.45f, -0.5f, 0.f, D3DXCOLOR(0.f, 1.f, 0.f, 1.f)},
+		{-0.45f, -0.5f, 0.f, D3DXCOLOR(0.f, 0.f, 1.f, 1.f)}
+	};
+
+	if (m_device_context) {
+		D3D11_MAPPED_SUBRESOURCE ms;
+		m_device_context->Map(m_vertex_buffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+		memcpy(ms.pData, v, sizeof(v));
+		m_device_context->Unmap(m_vertex_buffer, NULL);
+	}
 }
