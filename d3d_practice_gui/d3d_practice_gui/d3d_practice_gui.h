@@ -31,6 +31,15 @@ public:
 protected:
 	void paintEvent(QPaintEvent *e) override;
 
+protected Q_SLOTS:
+	void slotRotationXChanged(int position);
+	void slotRotationYChanged(int position);
+	void slotRotationZChanged(int position);
+
+	void slotPositionXChanged(int position);
+	void slotPositionYChanged(int position);
+	void slotPositionZChanged(int position);
+
 private:
 	void InitD3D(HWND hwnd);
 	void CleanD3D();
@@ -44,6 +53,8 @@ private:
 	void RenderTriangle();
 
 	void CreateTriangle();
+
+	void InitConnection();
 
 private:
 	Ui::d3d_practice_guiClass ui;

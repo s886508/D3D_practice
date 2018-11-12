@@ -12,15 +12,27 @@ m_rotation_z(0.f)
 
 }
 
-void D3DCamera::SetPosition(float x, float y, float z) {
+void D3DCamera::SetPositionX(float x) {
 	m_position_x = x;
+}
+
+void D3DCamera::SetPositionY(float y) {
 	m_position_y = y;
+}
+
+void D3DCamera::SetPositionZ(float z) {
 	m_position_z = z;
 }
 
-void D3DCamera::SetRotation(float x, float y, float z) {
+void D3DCamera::SetRotationX(float x) {
 	m_rotation_x = x;
+}
+
+void D3DCamera::SetRotationY(float y) {
 	m_rotation_y = y;
+}
+
+void D3DCamera::SetRotationZ(float z) {
 	m_rotation_z = z;
 }
 

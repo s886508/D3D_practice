@@ -34,6 +34,8 @@ d3d_practice_gui::d3d_practice_gui(QWidget *parent)
 {
 	ui.setupUi(this);
 
+	InitConnection();
+
 	if (m_display_window) {
 		m_display_window->setGeometry(10, 10, WIDTH, HEIGHT);
 		InitD3D((HWND)m_display_window->winId());
@@ -42,11 +44,26 @@ d3d_practice_gui::d3d_practice_gui(QWidget *parent)
 		InitD3DPipeline();
 		//CreateTriangle();
 	}
-	
 }
 
 d3d_practice_gui::~d3d_practice_gui() {
 	CleanD3D();
+}
+
+void d3d_practice_gui::InitConnection() {
+	connect(ui.camera_slider_rotation_x, &QSlider::sliderMoved, this, &d3d_practice_gui::slotRotationXChanged);
+	connect(ui.camera_slider_rotation_y, &QSlider::sliderMoved, this, &d3d_practice_gui::slotRotationYChanged);
+	connect(ui.camera_slider_rotation_z, &QSlider::sliderMoved, this, &d3d_practice_gui::slotRotationZChanged);
+	connect(ui.camera_slider_rotation_x, &QSlider::valueChanged, this, &d3d_practice_gui::slotRotationXChanged);
+	connect(ui.camera_slider_rotation_y, &QSlider::valueChanged, this, &d3d_practice_gui::slotRotationYChanged);
+	connect(ui.camera_slider_rotation_z, &QSlider::valueChanged, this, &d3d_practice_gui::slotRotationZChanged);
+
+	connect(ui.camera_slider_position_x, &QSlider::sliderMoved, this, &d3d_practice_gui::slotPositionXChanged);
+	connect(ui.camera_slider_position_y, &QSlider::sliderMoved, this, &d3d_practice_gui::slotPositionYChanged);
+	connect(ui.camera_slider_position_z, &QSlider::sliderMoved, this, &d3d_practice_gui::slotPositionZChanged);
+	connect(ui.camera_slider_position_x, &QSlider::valueChanged, this, &d3d_practice_gui::slotPositionXChanged);
+	connect(ui.camera_slider_position_y, &QSlider::valueChanged, this, &d3d_practice_gui::slotPositionYChanged);
+	connect(ui.camera_slider_position_z, &QSlider::valueChanged, this, &d3d_practice_gui::slotPositionZChanged);
 }
 
 void d3d_practice_gui::InitD3D(HWND hwnd) {
@@ -397,7 +414,9 @@ void d3d_practice_gui::CreateTriangle() {
 
 void d3d_practice_gui::InitD3DCamera() {
 	if (m_d3d_camera) {
-		m_d3d_camera->SetPosition(0.f, 0.f, -10.f);
+		m_d3d_camera->SetPositionX(0.f);
+		m_d3d_camera->SetPositionY(0.f);
+		m_d3d_camera->SetPositionZ(-10.f);
 	}
 }
 
@@ -425,5 +444,47 @@ void d3d_practice_gui::SetShaderParam() {
 	if (m_device_context) {
 		m_device_context->Unmap(m_matrix_buffer, 0);
 		m_device_context->VSSetConstantBuffers(0, 1, &m_matrix_buffer);
+	}
+}
+
+void d3d_practice_gui::slotRotationXChanged(int position) {
+	if (m_d3d_camera) {
+		m_d3d_camera->SetRotationX(position);
+		update();
+	}
+}
+
+void d3d_practice_gui::slotRotationYChanged(int position) {
+	if (m_d3d_camera) {
+		m_d3d_camera->SetRotationY(position);
+		update();
+	}
+}
+
+void d3d_practice_gui::slotRotationZChanged(int position) {
+	if (m_d3d_camera) {
+		m_d3d_camera->SetRotationZ(position);
+		update();
+	}
+}
+
+void d3d_practice_gui::slotPositionXChanged(int position) {
+	if (m_d3d_camera) {
+		m_d3d_camera->SetPositionX(position);
+		update();
+	}
+}
+
+void d3d_practice_gui::slotPositionYChanged(int position) {
+	if (m_d3d_camera) {
+		m_d3d_camera->SetPositionY(position);
+		update();
+	}
+}
+
+void d3d_practice_gui::slotPositionZChanged(int position) {
+	if (m_d3d_camera) {
+		m_d3d_camera->SetPositionZ(position);
+		update();
 	}
 }

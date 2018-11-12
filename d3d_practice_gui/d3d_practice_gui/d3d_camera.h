@@ -6,8 +6,12 @@ public:
 	~D3DCamera() = default;
 
 public:
-	void SetPosition(float x, float y, float z);
-	void SetRotation(float x, float y, float z);
+	void SetPositionX(float x);
+	void SetPositionY(float y);
+	void SetPositionZ(float z);
+	void SetRotationX(float x);
+	void SetRotationY(float y);
+	void SetRotationZ(float z);
 
 	D3DXVECTOR3 GetPosition();
 	D3DXVECTOR3 GetRotation();
