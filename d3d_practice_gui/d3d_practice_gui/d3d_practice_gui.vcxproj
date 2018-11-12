@@ -119,6 +119,7 @@
     </QtRcc>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="d3d_camera.cpp" />
     <ClCompile Include="d3d_practice_gui.cpp" />
     <ClCompile Include="display_window.cpp" />
     <ClCompile Include="main.cpp" />
@@ -141,6 +142,7 @@
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="d3d_camera.h" />
     <ClInclude Include="d3d_def.h" />
   </ItemGroup>
   <ItemGroup>

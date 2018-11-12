@@ -39,6 +39,9 @@
     <ClCompile Include="display_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="d3d_camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="d3d_practice_gui.h">
@@ -60,6 +63,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3d_def.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="d3d_camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,3 +1,10 @@
+cbuffer MatrixBuffer
+{
+	matrix worldMatrix;
+	matrix viewMatrix;
+	matrix projectMatrix;
+};
+
 struct VOut
 {
 	float4 position : SV_POSITION;
@@ -8,7 +15,12 @@ VOut VShader(float4 position : POSITION, float4 color : COLOR)
 {
 	VOut output;
 
-	output.position = position;
+	position.w = 1.0f;
+	output.position = mul(position, worldMatrix);
+	output.position = mul(output.position, viewMatrix);
+	//output.position = mul(output.position, projectionMatrix);
+
+	//output.position = position;
 	output.color = color;
 
 	return output;
