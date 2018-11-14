@@ -121,6 +121,7 @@
   <ItemGroup>
     <ClCompile Include="d3d_camera.cpp" />
     <ClCompile Include="d3d_practice_gui.cpp" />
+    <ClCompile Include="d3d_triangle_engine.cpp" />
     <ClCompile Include="display_window.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -144,6 +145,7 @@
   <ItemGroup>
     <ClInclude Include="d3d_camera.h" />
     <ClInclude Include="d3d_def.h" />
+    <ClInclude Include="d3d_triangle_engine.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders.shader" />

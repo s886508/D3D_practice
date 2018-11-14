@@ -1,5 +1,8 @@
 #pragma once
 
+struct D3DXVECTOR3;
+struct D3DXMATRIX;
+
 class D3DCamera {
 public:
 	D3DCamera();

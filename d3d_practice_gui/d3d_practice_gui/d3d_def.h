@@ -1,4 +1,8 @@
 #pragma once
+#include <d3dx10math.h>
+
+#define WIDTH 360
+#define HEIGHT 360
 
 typedef struct _VERTEX {
 	float x, y, z;
