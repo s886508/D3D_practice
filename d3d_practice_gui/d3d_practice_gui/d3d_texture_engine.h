@@ -12,11 +12,13 @@ struct ID3D11Texture2D;
 struct ID3D11DepthStencilState;
 struct ID3D11DepthStencilView;
 struct ID3D11RasterizerState;
+struct ID3D11ShaderResourceView;
+struct ID3D11SamplerState;
 
-class TriangleEngine {
+class TextureEngine {
 public:
-	TriangleEngine();
-	virtual ~TriangleEngine();
+	TextureEngine();
+	virtual ~TextureEngine();
 
 public:
 	void Init(HWND hwnd);
@@ -28,6 +30,7 @@ private:
 	void CleanD3D();
 	void InitD3DPipeline();
 	void InitD3DBuffer();
+	void InitD3DTexture();
 	
 	void SetShaderParam(D3DXMATRIX view_matrix);
 	void RenderTriangle();
@@ -51,6 +54,9 @@ private:
 	ID3D11DepthStencilState	*m_depth_stencil_state;
 	ID3D11DepthStencilView	*m_depth_stencil_view;
 	ID3D11RasterizerState	*m_rasterizer_state;
+
+	ID3D11ShaderResourceView *m_texture;
+	ID3D11SamplerState		*m_sampler_state;
 
 	D3DXMATRIX				m_projection_matrix;
 	D3DXMATRIX				m_world_matrix;

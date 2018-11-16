@@ -3,6 +3,7 @@
 #include "d3d_def.h"
 #include "d3d_camera.h"
 #include "d3d_triangle_engine.h"
+#include "d3d_texture_engine.h"
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dx11.lib")
@@ -12,7 +13,7 @@ d3d_practice_gui::d3d_practice_gui(QWidget *parent)
 	: QDialog(parent),
 	m_display_window(new DisplayWindow(this)),
 	m_d3d_camera(new D3DCamera()),
-	m_d3d_engine(new TriangleEngine())
+	m_d3d_engine(new TextureEngine())
 {
 	ui.setupUi(this);
 

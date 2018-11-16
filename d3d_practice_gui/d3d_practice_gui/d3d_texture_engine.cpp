@@ -2,9 +2,9 @@
 #include <d3dx11.h>
 #include <d3dx10.h>
 #include "d3d_def.h"
-#include "d3d_triangle_engine.h"
+#include "d3d_texture_engine.h"
 
-TriangleEngine::TriangleEngine() :
+TextureEngine::TextureEngine() :
 	m_swapchain(nullptr),
 	m_device(nullptr),
 	m_device_context(nullptr),
@@ -18,22 +18,25 @@ TriangleEngine::TriangleEngine() :
 	m_depth_stencil_buffer(nullptr),
 	m_depth_stencil_state(nullptr),
 	m_depth_stencil_view(nullptr),
-	m_rasterizer_state(nullptr)
+	m_rasterizer_state(nullptr),
+	m_texture(nullptr),
+	m_sampler_state(nullptr)
 {
 
 }
 
-TriangleEngine::~TriangleEngine() {
+TextureEngine::~TextureEngine() {
 	CleanD3D();
 }
 
-void TriangleEngine::Init(HWND hwnd) {
+void TextureEngine::Init(HWND hwnd) {
 	InitD3D(hwnd);
 	InitD3DBuffer();
 	InitD3DPipeline();
+	InitD3DTexture();
 }
 
-void TriangleEngine::InitD3D(HWND hwnd) {
+void TextureEngine::InitD3D(HWND hwnd) {
 	DXGI_SWAP_CHAIN_DESC scd;
 
 	ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC));
@@ -148,6 +151,25 @@ void TriangleEngine::InitD3D(HWND hwnd) {
 		m_device_context->RSSetViewports(1, &view_port);
 	}
 
+	if (m_device) {
+		D3D11_SAMPLER_DESC sampler_desc;
+		sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		sampler_desc.MipLODBias = 0.f;
+		sampler_desc.MaxAnisotropy = 1;
+		sampler_desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+		sampler_desc.BorderColor[0] = 0;
+		sampler_desc.BorderColor[1] = 0;
+		sampler_desc.BorderColor[2] = 0;
+		sampler_desc.BorderColor[3] = 0;
+		sampler_desc.MinLOD = 0;
+		sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		m_device->CreateSamplerState(&sampler_desc, &m_sampler_state);
+	}
+
 	const auto filed_of_view = (float)D3DX_PI / 4.f;
 	const auto screen_aspect_ratio = (float)WIDTH / (float)HEIGHT;
 	const auto screen_depth = 1000.f;
@@ -158,7 +180,17 @@ void TriangleEngine::InitD3D(HWND hwnd) {
 	D3DXMatrixOrthoLH(&m_ortho_matrix, (float)WIDTH, (float)HEIGHT, screen_near, screen_depth);
 }
 
-void TriangleEngine::CleanD3D() {
+void TextureEngine::CleanD3D() {
+	if (m_texture) {
+		m_texture->Release();
+		m_texture = nullptr;
+	}
+
+	if (m_sampler_state) {
+		m_sampler_state->Release();
+		m_sampler_state = nullptr;
+	}
+
 	if (m_vertex_buffer) {
 		m_vertex_buffer->Release();
 		m_vertex_buffer = nullptr;
@@ -230,10 +262,10 @@ void TriangleEngine::CleanD3D() {
 	}
 }
 
-void TriangleEngine::InitD3DPipeline() {
+void TextureEngine::InitD3DPipeline() {
 	ID3D10Blob *vertex_blob = nullptr, *pixel_blob = nullptr;
-	D3DX11CompileFromFile(L"shaders.shader", 0, 0, "VShader", "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, 0, &vertex_blob, 0, 0);
-	D3DX11CompileFromFile(L"shaders.shader", 0, 0, "PShader", "ps_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, 0, &pixel_blob, 0, 0);
+	D3DX11CompileFromFile(L"texture.shader", 0, 0, "VShader", "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, 0, &vertex_blob, 0, 0);
+	D3DX11CompileFromFile(L"texture.shader", 0, 0, "PShader", "ps_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, 0, &pixel_blob, 0, 0);
 
 	if (m_device) {
 		if (vertex_blob)
@@ -245,12 +277,13 @@ void TriangleEngine::InitD3DPipeline() {
 	if (m_device_context) {
 		m_device_context->VSSetShader(m_vertex_shader, 0, 0);
 		m_device_context->PSSetShader(m_pixel_shader, 0, 0);
+		m_device_context->PSSetSamplers(0, 1, &m_sampler_state);
 	}
 
 	// Init input layout
 	D3D11_INPUT_ELEMENT_DESC ie_desc[] = {
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 
 	if (m_device && m_vertex_shader) {
@@ -262,22 +295,22 @@ void TriangleEngine::InitD3DPipeline() {
 	}
 }
 
-void TriangleEngine::InitD3DBuffer() {
+void TextureEngine::InitD3DBuffer() {
 	if (m_device) {
 		{
-			VERTEX *vertex = new VERTEX[3];
+			VERTEX2 *vertex = new VERTEX2[3];
 			vertex[0].x = -1.f, vertex[0].y = -1.f, vertex[0].z = 0.f;
-			vertex[0].color = D3DXCOLOR(0.f, 1.f, 0.f, 1.f);
+			vertex[0].texture = D3DXVECTOR2(0.f, 1.f);
 			vertex[1].x = 0.f, vertex[1].y = 1.f, vertex[1].z = 0.f;
-			vertex[1].color = D3DXCOLOR(0.f, 1.f, 0.f, 1.f);
+			vertex[1].texture = D3DXVECTOR2(0.5f, 0.f);
 			vertex[2].x = 1.f, vertex[2].y = -1.f, vertex[2].z = 0.f;
-			vertex[2].color = D3DXCOLOR(0.f, 1.f, 0.f, 1.f);
+			vertex[2].texture = D3DXVECTOR2(1.f, 1.f);
 
 			D3D11_BUFFER_DESC buf_desc;
 			ZeroMemory(&buf_desc, sizeof(D3D11_BUFFER_DESC));
 
 			buf_desc.Usage = D3D11_USAGE_DYNAMIC;
-			buf_desc.ByteWidth = sizeof(VERTEX) * 3;  // For drawgin triangle currently.
+			buf_desc.ByteWidth = sizeof(VERTEX2) * 3;  // For drawgin triangle currently.
 			buf_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 			buf_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
@@ -329,7 +362,13 @@ void TriangleEngine::InitD3DBuffer() {
 	}
 }
 
-void TriangleEngine::SetShaderParam(D3DXMATRIX view_matrix) {
+void TextureEngine::InitD3DTexture() {
+	if (m_device) {
+		D3DX11CreateShaderResourceViewFromFile(m_device, L"..\\d3d_practice_gui\\texture\\seafloor.dds",NULL, NULL, &m_texture, NULL);
+	}
+}
+
+void TextureEngine::SetShaderParam(D3DXMATRIX view_matrix) {
 	D3D11_MAPPED_SUBRESOURCE ms;
 	MatrixBufferType *data = nullptr;
 
@@ -337,7 +376,7 @@ void TriangleEngine::SetShaderParam(D3DXMATRIX view_matrix) {
 
 	D3DXMatrixTranspose(&world_matrix, &world_matrix);
 	//D3DXMatrixTranspose(&view_matrix, &view_matrix);
-	D3DXMatrixTranspose(&projection_matrix, &projection_matrix);
+	//D3DXMatrixTranspose(&projection_matrix, &projection_matrix);
 
 	if (m_device_context)
 		m_device_context->Map(m_matrix_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
@@ -350,10 +389,11 @@ void TriangleEngine::SetShaderParam(D3DXMATRIX view_matrix) {
 	if (m_device_context) {
 		m_device_context->Unmap(m_matrix_buffer, 0);
 		m_device_context->VSSetConstantBuffers(0, 1, &m_matrix_buffer);
+		m_device_context->PSSetShaderResources(0, 1, &m_texture);
 	}
 }
 
-bool TriangleEngine::RenderFrame(const D3DXMATRIX &view_matrix) {
+bool TextureEngine::RenderFrame(const D3DXMATRIX &view_matrix) {
 	if (m_device_context) {
 		m_device_context->ClearRenderTargetView(m_render_target_view, D3DXCOLOR(1.f, 0.2f, 0.4f, 1.f));
 		m_device_context->ClearDepthStencilView(m_depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
@@ -371,9 +411,9 @@ bool TriangleEngine::RenderFrame(const D3DXMATRIX &view_matrix) {
 	return true;
 }
 
-void TriangleEngine::RenderTriangle() {
+void TextureEngine::RenderTriangle() {
 	if (m_device_context) {
-		UINT stride = sizeof(VERTEX);
+		UINT stride = sizeof(VERTEX2);
 		UINT offset = 0;
 
 		m_device_context->IASetVertexBuffers(0, 1, &m_vertex_buffer, &stride, &offset);

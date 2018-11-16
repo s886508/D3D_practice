@@ -6,6 +6,7 @@
 class DisplayWindow;
 class D3DCamera;
 class TriangleEngine;
+class TextureEngine;
 
 class d3d_practice_gui : public QDialog
 {
@@ -37,5 +38,5 @@ private:
 	DisplayWindow *m_display_window;
 
 	std::shared_ptr<D3DCamera> m_d3d_camera;
-	std::shared_ptr<TriangleEngine> m_d3d_engine;
+	std::shared_ptr<TextureEngine> m_d3d_engine;
 };

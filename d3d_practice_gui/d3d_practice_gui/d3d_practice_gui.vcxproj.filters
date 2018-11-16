@@ -28,6 +28,9 @@
       <Extensions>moc;h;cpp</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{605ccefb-77cf-40bf-9380-55f6b011edf8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -43,6 +46,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="d3d_triangle_engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="d3d_texture_engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,10 +80,16 @@
     <ClInclude Include="d3d_triangle_engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="d3d_texture_engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders.shader">
-      <Filter>Source Files</Filter>
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="texture.shader">
+      <Filter>Shader</Filter>
     </None>
   </ItemGroup>
 </Project>
