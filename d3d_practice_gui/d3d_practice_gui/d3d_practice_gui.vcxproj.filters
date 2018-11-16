@@ -83,6 +83,9 @@
     <ClInclude Include="d3d_texture_engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ID3d_engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders.shader">

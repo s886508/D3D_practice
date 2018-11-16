@@ -2,6 +2,7 @@
 
 #include <QtWidgets/QDialog>
 #include "ui_d3d_practice_gui.h"
+#include "ID3d_engine.h"
 
 class DisplayWindow;
 class D3DCamera;
@@ -38,5 +39,5 @@ private:
 	DisplayWindow *m_display_window;
 
 	std::shared_ptr<D3DCamera> m_d3d_camera;
-	std::shared_ptr<TextureEngine> m_d3d_engine;
+	std::shared_ptr<ID3DEngine> m_d3d_engine;
 };

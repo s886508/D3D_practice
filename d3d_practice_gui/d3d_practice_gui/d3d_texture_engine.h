@@ -1,4 +1,5 @@
 #pragma once
+#include "ID3d_engine.h"
 
 struct IDXGISwapChain;
 struct ID3D11Device;
@@ -15,15 +16,14 @@ struct ID3D11RasterizerState;
 struct ID3D11ShaderResourceView;
 struct ID3D11SamplerState;
 
-class TextureEngine {
+class TextureEngine : public ID3DEngine {
 public:
 	TextureEngine();
 	virtual ~TextureEngine();
 
 public:
-	void Init(HWND hwnd);
-
-	bool RenderFrame(const D3DXMATRIX &view_matrix);
+	void Init(HWND hwnd) override;
+	bool RenderFrame(const D3DXMATRIX &view_matrix) override;
 
 private:
 	void InitD3D(HWND hwnd);
