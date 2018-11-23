@@ -375,8 +375,8 @@ void TextureEngine::SetShaderParam(D3DXMATRIX view_matrix) {
 	D3DXMATRIX world_matrix(m_world_matrix), projection_matrix(m_projection_matrix);
 
 	D3DXMatrixTranspose(&world_matrix, &world_matrix);
-	//D3DXMatrixTranspose(&view_matrix, &view_matrix);
-	//D3DXMatrixTranspose(&projection_matrix, &projection_matrix);
+	D3DXMatrixTranspose(&view_matrix, &view_matrix);
+	D3DXMatrixTranspose(&projection_matrix, &projection_matrix);
 
 	if (m_device_context)
 		m_device_context->Map(m_matrix_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
