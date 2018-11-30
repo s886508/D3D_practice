@@ -187,7 +187,7 @@ public:
         label_2->setText(QApplication::translate("d3d_practice_guiClass", "X", nullptr));
         label_3->setText(QApplication::translate("d3d_practice_guiClass", "Y", nullptr));
         label_4->setText(QApplication::translate("d3d_practice_guiClass", "Z", nullptr));
-        label->setText(QApplication::translate("d3d_practice_guiClass", "Camera Rotation", nullptr));
+        label->setText(QApplication::translate("d3d_practice_guiClass", "Camera Position", nullptr));
         label_5->setText(QApplication::translate("d3d_practice_guiClass", "Camera Rotation", nullptr));
         label_6->setText(QApplication::translate("d3d_practice_guiClass", "X", nullptr));
         label_7->setText(QApplication::translate("d3d_practice_guiClass", "Y", nullptr));

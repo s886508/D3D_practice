@@ -120,6 +120,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="d3d_camera.cpp" />
+    <ClCompile Include="d3d_diffuselighting_engine.cpp" />
     <ClCompile Include="d3d_practice_gui.cpp" />
     <ClCompile Include="d3d_texture_engine.cpp" />
     <ClCompile Include="d3d_triangle_engine.cpp" />
@@ -146,11 +147,13 @@
   <ItemGroup>
     <ClInclude Include="d3d_camera.h" />
     <ClInclude Include="d3d_def.h" />
+    <ClInclude Include="d3d_diffuselighting_engine.h" />
     <ClInclude Include="d3d_texture_engine.h" />
     <ClInclude Include="d3d_triangle_engine.h" />
     <ClInclude Include="ID3d_engine.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="diffuselighting.shader" />
     <None Include="shaders.shader" />
     <None Include="texture.shader" />
   </ItemGroup>

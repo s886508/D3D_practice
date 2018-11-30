@@ -103,7 +103,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Camera Rotation</string>
+    <string>Camera Position</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_5">
