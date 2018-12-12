@@ -45,6 +45,8 @@ public:
     QSlider *camera_slider_position_x;
     QSlider *camera_slider_position_y;
     QSlider *camera_slider_position_z;
+    QLabel *label_9;
+    QSlider *slider_rotation_degree;
 
     void setupUi(QDialog *d3d_practice_guiClass)
     {
@@ -175,6 +177,14 @@ public:
 
         horizontalLayout_4->addLayout(verticalLayout_4);
 
+        label_9 = new QLabel(d3d_practice_guiClass);
+        label_9->setObjectName(QStringLiteral("label_9"));
+        label_9->setGeometry(QRect(470, 83, 40, 20));
+        slider_rotation_degree = new QSlider(d3d_practice_guiClass);
+        slider_rotation_degree->setObjectName(QStringLiteral("slider_rotation_degree"));
+        slider_rotation_degree->setGeometry(QRect(390, 110, 201, 22));
+        slider_rotation_degree->setMaximum(360);
+        slider_rotation_degree->setOrientation(Qt::Horizontal);
 
         retranslateUi(d3d_practice_guiClass);
 
@@ -192,6 +202,7 @@ public:
         label_6->setText(QApplication::translate("d3d_practice_guiClass", "X", nullptr));
         label_7->setText(QApplication::translate("d3d_practice_guiClass", "Y", nullptr));
         label_8->setText(QApplication::translate("d3d_practice_guiClass", "Z", nullptr));
+        label_9->setText(QApplication::translate("d3d_practice_guiClass", "Rotation", nullptr));
     } // retranslateUi
 
 };

@@ -29,6 +29,8 @@ protected Q_SLOTS:
 	void slotPositionYChanged(int position);
 	void slotPositionZChanged(int position);
 
+	void slotRotationDegreeChanged(int position);
+
 private:
 	void InitD3DCamera();
 	void InitConnection();

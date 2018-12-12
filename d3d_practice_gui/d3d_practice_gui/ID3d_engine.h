@@ -7,4 +7,5 @@ struct ID3DEngine {
 
 	virtual void Init(HWND hwnd) = 0;
 	virtual bool RenderFrame(const D3DXMATRIX &view_matrix) = 0;
+	virtual void SetRotationDegree(const float degree) {};
 };

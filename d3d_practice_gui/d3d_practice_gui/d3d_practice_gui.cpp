@@ -5,6 +5,7 @@
 #include "d3d_triangle_engine.h"
 #include "d3d_texture_engine.h"
 #include "d3d_diffuselighting_engine.h"
+#include "d3d_simple3dmodel_engine.h"
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dx11.lib")
@@ -14,7 +15,7 @@ d3d_practice_gui::d3d_practice_gui(QWidget *parent)
 	: QDialog(parent),
 	m_display_window(new DisplayWindow(this)),
 	m_d3d_camera(new D3DCamera()),
-	m_d3d_engine(new DiffuseLightingEngine())
+	m_d3d_engine(new Simple3DModelEngine())
 {
 	ui.setupUi(this);
 
@@ -46,6 +47,8 @@ void d3d_practice_gui::InitConnection() {
 	connect(ui.camera_slider_position_x, &QSlider::valueChanged, this, &d3d_practice_gui::slotPositionXChanged);
 	connect(ui.camera_slider_position_y, &QSlider::valueChanged, this, &d3d_practice_gui::slotPositionYChanged);
 	connect(ui.camera_slider_position_z, &QSlider::valueChanged, this, &d3d_practice_gui::slotPositionZChanged);
+
+	connect(ui.slider_rotation_degree, &QSlider::valueChanged, this, &d3d_practice_gui::slotRotationDegreeChanged);
 }
 
 void d3d_practice_gui::paintEvent(QPaintEvent *e) {
@@ -103,5 +106,12 @@ void d3d_practice_gui::slotPositionZChanged(int position) {
 	if (m_d3d_camera) {
 		m_d3d_camera->SetPositionZ(position);
 		update();
+	}
+}
+
+void d3d_practice_gui::slotRotationDegreeChanged(int position) {
+	if (m_d3d_engine) {
+		float degree = position / 10.f;
+		m_d3d_engine->SetRotationDegree(degree);
 	}
 }

@@ -54,6 +54,9 @@
     <ClCompile Include="d3d_diffuselighting_engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="d3d_simple3dmodel_engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="d3d_practice_gui.h">
@@ -92,6 +95,9 @@
     <ClInclude Include="d3d_diffuselighting_engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="d3d_simple3dmodel_engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders.shader">
@@ -101,6 +107,9 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="diffuselighting.shader">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="simple3dmodel.shader">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>
